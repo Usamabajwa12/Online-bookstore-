@@ -1,0 +1,112 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+class Book {
+    private final String title;
+    private final String author;
+    private final String isbn;
+    private final double price;
+    private int quantity;
+    public Book(String title, String author, String isbn, double price, int quantity) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.price = price;
+        this.quantity = quantity;
+    }
+    // Getters and Setters
+    public String getTitle() { return title; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    @Override
+    public String toString() {
+        return "Book [Title=" + title + ", Author=" + author + ", ISBN=" + isbn + ", Price=" + price + ", Quantity=" + quantity + "]";
+    }
+}
+class Customer {
+    private final String name;
+    private final String email;
+    private final List<Book> purchasedBooks;
+    public Customer(String name, String email) {
+        this.name = name;
+        this.email = email;
+        this.purchasedBooks = new ArrayList<>();
+    }
+    // Getters and Setters
+    public void purchaseBook(Book book) {
+        if (book.getQuantity() > 0) {
+            purchasedBooks.add(book);
+            book.setQuantity(book.getQuantity() - 1);
+            System.out.println("Book purchased: " + book.getTitle());
+        } else {
+            System.out.println("Book out of stock: " + book.getTitle());
+        }
+    }
+    @Override
+    public String toString() {
+        return "Customer [Name=" + name + ", Email=" + email + ", Purchased Books=" + purchasedBooks + "]";
+    }
+}
+class Store {
+    private final List<Book> books;
+    public Store() {
+        this.books = new ArrayList<>();
+    }
+    public void addBook(Book book) {
+        books.add(book);
+        System.out.println("Book added: " + book.getTitle());
+    }
+    public void listBooks() {
+        System.out.println("Available books:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
+    }
+    public Book findBookByTitle(String title) {
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                return book;
+            }
+        }
+        return null;
+    }
+}
+
+public class BookSellerApp {
+    public static void main(String[] args) {
+        Store store = new Store();
+        Scanner scanner = new Scanner(System.in);
+        // Adding some books to the store
+        store.addBook(new Book("Java Programming", "Author A", "1111", 45.99, 10));
+        store.addBook(new Book("Effective Java", "Author B", "2222", 55.99, 5));
+        store.addBook(new Book("Clean Code", "Author C", "3333", 40.00, 2));
+        // Adding a customer
+        Customer customer = new Customer("John Doe", "john@example.com");
+        while (true) {
+            System.out.println("\n1. List books\n2. Buy a book\n3. Exit");
+            System.out.print("Enter choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            switch (choice) {
+                case 1:
+                    store.listBooks();
+                    break;
+                case 2:
+                    System.out.print("Enter book title to purchase: ");
+                    String title = scanner.nextLine();
+                    Book book = store.findBookByTitle(title);
+                    if (book != null) {
+                        customer.purchaseBook(book);
+                    } else {
+                        System.out.println("Book not found.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
